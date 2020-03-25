@@ -1,0 +1,23 @@
+{
+  "name": "twitch-plinko",
+  "version": "1.0.0",
+  "description": "Play plinko on Twitch",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Plinko",
+    "Twitch"
+  ],
+  "author": "Sean Barrett",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.5",
+    "express": "^4.17.1",
+    "multer": "^1.4.2",
+    "node-sass": "^4.13.1",
+    "node-sass-middleware": "^0.11.0"
+  }
+}

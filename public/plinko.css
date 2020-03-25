@@ -1,0 +1,17 @@
+#bob {
+  height: 830px;
+  width: 640px;
+  position: absolute;
+  top: 0px;
+  left:0px;
+  z-index: -500;
+  background: url('bob.png');
+}
+
+#scoreboard {
+  font-size: 30px;
+  font-family: sans-serif;
+  position: absolute;
+  top: 185px;
+  left: 669px;
+}
