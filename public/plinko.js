@@ -249,7 +249,6 @@ App.setupPlayer = function(json) {
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-let foo;
 App.circles = [];
 App.rectangles = [];
 App.polygons = [];
@@ -259,7 +258,6 @@ App.activeChips = [];
 App.myInterface = new App.Interface();
 App.gameStart = (new Date()).getTime();
 App.hue = 0;
-App.commentEndpoint = 'https://graph.facebook.com/v2.12/me?fields=live_videos.limit(1)%7Bstatus%2Ccomments%7D&access_token=EAACBSzUTHmYBAAWaxRadUW7nfNrmAHkoM9P1vHOFwwXcIHbmivCcwQ7ZC8Uu2BBchOrYEp1thxeme1JiscwMztIX3oWib9g1ZB8YDbRVnUZCS5t0odWduhsCYxwaBsySwRZAALWfxFv2ZB1B5QIQHgiKWuDqMVupZBoyUd1lawk7UuQqCHZC1l0WlCZAvpQTfIAiKdNHJkZBOFt4EgCKt4CZBaW6UcTcoqg9x5JmSFSnsgMAZDZD';
 
 const myp = new p5(function(p) {
   // module aliases
@@ -352,29 +350,6 @@ const myp = new p5(function(p) {
   };
 });
 
-const hitFb = function() {
-  myp.httpGet(
-    App.commentEndpoint,
-    {},
-    'json',
-    App.setupPlayer
-  );
-};
-
-App.fetchPicture = function(id) {
-  let result = undefined;
-  $.ajax({
-    async: false,
-    headers: { Accept : "application/json" },
-    method: 'GET',
-    url: 'https://graph.facebook.com/v2.12/' + id + '/picture?redirect=false&access_token=EAACBSzUTHmYBAAWaxRadUW7nfNrmAHkoM9P1vHOFwwXcIHbmivCcwQ7ZC8Uu2BBchOrYEp1thxeme1JiscwMztIX3oWib9g1ZB8YDbRVnUZCS5t0odWduhsCYxwaBsySwRZAALWfxFv2ZB1B5QIQHgiKWuDqMVupZBoyUd1lawk7UuQqCHZC1l0WlCZAvpQTfIAiKdNHJkZBOFt4EgCKt4CZBaW6UcTcoqg9x5JmSFSnsgMAZDZD',
-    success(json) {
-      return result = json.data.url;
-    }
-  });
-  return result;
-};
-
 App.newPlayer = function(id, name, msg, time) {
   const player = new App.Player(id, name, time);
   const chip = new App.Chip(msg, player, time);
@@ -397,20 +372,3 @@ App.updatePlayer = function(player, msg, time) {
     return myp.dropChip(chip);
   }
 };
-
-// NOTE: Maybe obsolete now that we are using websockets.
-App.compare = function(a,b) {
-  if (a.created_time < b.created_time) {
-    return -1;
-  }
-  if (a.created_time > b.created_time) {
-    return 1;
-  }
-  return 0;
-};
-
-
-window.onload = (foo = function() {
-  // hitFb();
-  // setInterval(hitFb, 5000);
-});
