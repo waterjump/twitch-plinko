@@ -35,16 +35,16 @@ App.Interface = class Interface {};
 
 App.Interface.prototype.drawChip = function(p, chip) {
   const { body } = chip;
-  p.fill(0);
+  p.fill(chip.player.color);
   const rad = body.circleRadius;
   const ctx = $('canvas')[0].getContext('2d');
   ctx.save();
   ctx.translate(body.position.x, body.position.y);
-  ctx.rotate(body.angle);
-  const pat = ctx.createPattern(chip.player.element, "repeat");
+  // ctx.rotate(body.angle);
+  // const pat = ctx.createPattern(chip.player.element, "repeat");
   ctx.beginPath();
   ctx.arc(0, 0, rad, 0, 2 * Math.PI, false);
-  ctx.fillStyle = pat;
+  // ctx.fillStyle = pat;
   ctx.fill();
   ctx.restore();
 };
@@ -211,10 +211,11 @@ App.Interface.prototype.updateScore = function(players) {
 
 
 App.Player = class Player {
-  constructor(id, name, lastComment) {
+  constructor(id, name, lastComment, color) {
     this.id = id;
     this.name = name;
     this.lastComment = lastComment;
+    this.color = color;
     this.chips = [];
     this.score = 0;
     this.hasActiveChip = false;
@@ -226,17 +227,19 @@ App.Player.prototype.placePicture = function(intrfc) {
 };
 
 App.setupPlayer = function(json) {
+  console.log(json.context);
   const name = json.context.username
   const id = json.context.username
   const timestamp = Number(json.context['tmi-sent-ts']);
   const message = json.command.trim();
+  const color = json.context.color;
 
   if (timestamp > App.gameStart) {
     const values = ['1','2','3','4','5','6','7','8','9'];
     if (values.includes(message)) {
       const player = App.players.filter( p => p.id === id)[0];
       if (player === undefined) {
-        App.newPlayer(id, name, message, timestamp);
+        App.newPlayer(id, name, message, timestamp, color);
       } else {
         App.updatePlayer(player, message, timestamp);
       }
@@ -306,10 +309,11 @@ const myp = new p5(function(p) {
   p.keyPressed = function() {
     if ((p.keyCode > 48) && (p.keyCode < 58)) {
       const player = App.players.filter(p => p.id === 'me')[0];
+      const timestamp = (new Date()).getTime();
       if (player === undefined) {
-        App.newPlayer('me', 'dummy', p.keyCode - 48, (new Date).toISOString());
+        App.newPlayer('me', 'dummy', p.keyCode - 48, timestamp, '#000');
       } else {
-        App.updatePlayer(player, p.keyCode - 48, (new Date).toISOString());
+        App.updatePlayer(player, p.keyCode - 48, timestamp);
       }
     }
   };
@@ -350,8 +354,8 @@ const myp = new p5(function(p) {
   };
 });
 
-App.newPlayer = function(id, name, msg, time) {
-  const player = new App.Player(id, name, time);
+App.newPlayer = function(id, name, msg, time, color) {
+  const player = new App.Player(id, name, time, color);
   const chip = new App.Chip(msg, player, time);
   this.activeChips.push(chip);
   // player.picture = this.fetchPicture(player.id);
