@@ -225,6 +225,24 @@ App.Player.prototype.placePicture = function(intrfc) {
   intrfc.placePicture(this.id, this.picture);
 };
 
+App.setupPlayer = function(json) {
+  const name = json.context.username
+  const id = json.context.username
+  const timestamp = Number(json.context['tmi-sent-ts']);
+  const message = json.command.trim();
+
+  if (timestamp > App.gameStart) {
+    const values = ['1','2','3','4','5','6','7','8','9'];
+    if (values.includes(message)) {
+      const player = App.players.filter( p => p.id === id)[0];
+      if (player === undefined) {
+        App.newPlayer(id, name, message, timestamp);
+      } else {
+        App.updatePlayer(player, message, timestamp);
+      }
+    }
+  }
+};
 
 /*
  * decaffeinate suggestions:
@@ -239,7 +257,7 @@ App.engine = undefined;
 App.players = [];
 App.activeChips = [];
 App.myInterface = new App.Interface();
-App.gameStart = (new Date).toISOString();
+App.gameStart = (new Date()).getTime();
 App.hue = 0;
 App.commentEndpoint = 'https://graph.facebook.com/v2.12/me?fields=live_videos.limit(1)%7Bstatus%2Ccomments%7D&access_token=EAACBSzUTHmYBAAWaxRadUW7nfNrmAHkoM9P1vHOFwwXcIHbmivCcwQ7ZC8Uu2BBchOrYEp1thxeme1JiscwMztIX3oWib9g1ZB8YDbRVnUZCS5t0odWduhsCYxwaBsySwRZAALWfxFv2ZB1B5QIQHgiKWuDqMVupZBoyUd1lawk7UuQqCHZC1l0WlCZAvpQTfIAiKdNHJkZBOFt4EgCKt4CZBaW6UcTcoqg9x5JmSFSnsgMAZDZD';
 
@@ -284,12 +302,8 @@ const myp = new p5(function(p) {
     Engine.run(engine);
 
     socket = io.connect('http://localhost:8081')
-    socket.on('foo', p.processIt);
+    socket.on('play', App.setupPlayer);
   };
-
-  p.processIt = function(data) {
-    console.log(data);
-  }
 
   p.keyPressed = function() {
     if ((p.keyCode > 48) && (p.keyCode < 58)) {
@@ -384,6 +398,7 @@ App.updatePlayer = function(player, msg, time) {
   }
 };
 
+// NOTE: Maybe obsolete now that we are using websockets.
 App.compare = function(a,b) {
   if (a.created_time < b.created_time) {
     return -1;
@@ -394,45 +409,6 @@ App.compare = function(a,b) {
   return 0;
 };
 
-App.setupPlayer = function(json) {
-  let comments;
-  if (json.live_videos !== undefined) {
-    ({
-      comments
-    } = json.live_videos.data[0]);
-  } else {
-    comments = json;
-  }
-
-  if ((comments.paging !== undefined) && (comments.paging.next !== undefined)) {
-    App.commentEndpoint = comments.paging.next;
-    console.log(App.commentEndpoint);
-  }
-
-  comments = comments.data.sort(App.compare);
-  $.each(comments, (function(_i, comment) {
-    if (comment.created_time > App.gameStart) {
-      const {
-        name
-      } = comment.from;
-      const {
-        id
-      } = comment.from;
-      const message = comment.message.trim();
-      const time = comment.created_time;
-      const values = ['1','2','3','4','5','6','7','8','9'];
-      if (values.includes(message)) {
-        const player = App.players.filter( p => p.id === id)[0];
-        if (player === undefined) {
-          return App.newPlayer(id, name, message, time);
-        } else {
-          return App.updatePlayer(player, message, time);
-        }
-      }
-    }
-    })
-  );
-};
 
 window.onload = (foo = function() {
   // hitFb();

@@ -57,7 +57,7 @@ function onMessageHandler (target, context, msg, self) {
   // Remove whitespace from chat message
   const commandName = msg.trim();
 
-  io.emit('foo', { target: target, context: context, command: commandName });
+  io.emit('play', { target: target, context: context, command: commandName });
 
   // If the command is known, let's execute it
   if (commandName === '!d20') {
