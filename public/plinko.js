@@ -27,16 +27,12 @@ App.Chip = class Chip {
  * DS205: Consider reworking code to avoid use of IIFEs
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-const {
-  Bodies
-} = Matter;
+const { Bodies } = Matter;
 
 App.Interface = class Interface {};
 
 App.Interface.prototype.drawChip = function(p, chip) {
-  const {
-    body
-  } = chip;
+  const { body } = chip;
   p.fill(0);
   const rad = body.circleRadius;
   const ctx = $('canvas')[0].getContext('2d');
@@ -56,7 +52,14 @@ App.Interface.prototype.drawEllipse = function(p, body) {
 };
 
 App.Interface.prototype.drawRect = function(p, body) {
-  if (!body.isSensor) { p.rect(this.rectX(body), this.rectY(body), this.rectWidth(body), this.rectHeight(body)); }
+  if (!body.isSensor) {
+    p.rect(
+      this.rectX(body),
+      this.rectY(body),
+      this.rectWidth(body),
+      this.rectHeight(body)
+    );
+  }
 };
 
 App.Interface.prototype.drawPoly = function(p, body) {
@@ -96,6 +99,7 @@ App.Interface.prototype.placePegs = function(circles) {
   }
 };
 
+// Displays image off-screen so it's loaded
 App.Interface.prototype.placePicture = (id, picture) => $('body').append(
   '<img id="' + id + '" class="off-screen" src="' + picture + '" />'
 );
@@ -203,17 +207,20 @@ App.Interface.compare = function(a,b) {
 
 App.Interface.prototype.updateScore = function(players) {
   $('#scoreboard').html('');
-  let newHtml = '<tr><td>Player</td><td>Score&nbsp;</td><td>Chips left</td></tr>';
-  $.each(players.sort(App.Interface.compare).reverse(), (i, player) => newHtml = newHtml + '<tr><td>' + parseInt(i + 1) + '. ' + player.name + '&nbsp;&nbsp;</td><td>' + parseInt(player.score) + '&nbsp;</td><td>' + parseInt(5 - player.chips.length) + '</td></tr>');
-  return $('#scoreboard').html(newHtml);
+  let newHtml =
+    '<tr><td>Player</td><td>Score&nbsp;</td><td>Chips left</td></tr>';
+  $.each(
+    players.sort(App.Interface.compare).reverse(),
+    function(i, player) {
+      newHtml = `${newHtml}<tr><td>${parseInt(i + 1)}. ${player.name}&nbsp;` +
+        `&nbsp;</td><td>${parseInt(player.score)}&nbsp;</td><td>` +
+        `${parseInt(5 - player.chips.length)}</td></tr>`;
+    }
+  );
+  $('#scoreboard').html(newHtml);
 };
 
 
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 App.Player = class Player {
   constructor(id, name, lastComment) {
     this.id = id;
@@ -226,7 +233,7 @@ App.Player = class Player {
 };
 
 App.Player.prototype.placePicture = function(intrfc) {
-  return intrfc.placePicture(this.id, this.picture);
+  intrfc.placePicture(this.id, this.picture);
 };
 
 
@@ -249,30 +256,11 @@ App.commentEndpoint = 'https://graph.facebook.com/v2.12/me?fields=live_videos.li
 
 const myp = new p5(function(p) {
   // module aliases
-  const {
-    Engine
-  } = Matter;
-  const {
-    World
-  } = Matter;
-  const {
-    Bodies
-  } = Matter;
-  const {
-    Events
-  } = Matter;
+  const { Engine, World, Bodies, Events } = Matter;
   let {
     engine
   } = App;
-  const {
-    circles
-  } = App;
-  const {
-    rectangles
-  } = App;
-  const {
-    polygons
-  } = App;
+  const { circles, rectangles, polygons } = App;
   let img = undefined;
 
   p.preload = () => img = p.loadImage('bob.png');
@@ -301,9 +289,7 @@ const myp = new p5(function(p) {
         console.log('score ' + sensor.value);
         const body = bodies.filter( b => b.isChip)[0];
         body.restitution = 0;
-        const {
-          player
-        } = body.chip;
+        const { player } = body.chip;
         player.score = player.score + sensor.value;
         App.myInterface.updateScore(App.players);
       }
@@ -324,9 +310,7 @@ const myp = new p5(function(p) {
 
   p.dropChip = function(chip) {
     chip.player.hasActiveChip = true;
-    const {
-      body
-    } = chip;
+    const { body } = chip;
     circles.push(body);
     World.add(engine.world, body);
     Events.on(body, 'sleepStart', function(event) {
@@ -355,7 +339,6 @@ const myp = new p5(function(p) {
     });
     App.myInterface.placeSlotNumbers(p);
     App.myInterface.placeBinScores(p);
-//    $('body').css 'background-color', 'hsl(' + App.hue + ', 100%, 50%)'
     App.hue++;
     if (App.hue > 360) { App.hue = 0; }
   };
@@ -461,5 +444,3 @@ window.onload = (foo = function() {
   // hitFb();
   // setInterval(hitFb, 5000);
 });
-
-
