@@ -1,3 +1,5 @@
+var socket;
+
 var App = {};
 
 App.Chip = class Chip {
@@ -280,7 +282,14 @@ const myp = new p5(function(p) {
       }
     });
     Engine.run(engine);
+
+    socket = io.connect('http://localhost:8081')
+    socket.on('foo', p.processIt);
   };
+
+  p.processIt = function(data) {
+    console.log(data);
+  }
 
   p.keyPressed = function() {
     if ((p.keyCode > 48) && (p.keyCode < 58)) {
