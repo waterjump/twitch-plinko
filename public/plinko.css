@@ -1,3 +1,7 @@
+body {
+  margin: 0px;
+}
+
 #bob {
   height: 830px;
   width: 640px;
@@ -6,6 +10,11 @@
   left:0px;
   z-index: -500;
   background: url('bob.png');
+}
+
+.off-screen {
+  position: absolute;
+  left: -9999px;
 }
 
 #scoreboard {
