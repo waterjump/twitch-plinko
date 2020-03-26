@@ -85,13 +85,7 @@ App.Interface.prototype.placePegs = function(circles) {
     let j = 0;
     x = offset;
     while (j < cols) {
-      circles.push(Bodies.circle(
-        x,
-        y,
-        2.5,
-        {isStatic: true}
-      )
-      );
+      circles.push(Bodies.circle(x, y, 2.5, { isStatic: true }));
       x = x + 60;
       j++;
     }
@@ -159,40 +153,33 @@ App.Interface.prototype.placeBinScores = function(p) {
   p.rotate(-Math.PI / 2 );
   const scores = ['100','500','1000','- 0 -','10,000','- 0 -','1000','500','100'];
   let i = 0;
-  return (() => {
-    const result = [];
-    while (i < scores.length) {
-      p.text(scores[i], 10, 90 + (i * 60));
-      result.push(i++);
-    }
-    return result;
-  })();
+  while (i < scores.length) {
+    p.text(scores[i], 10, 90 + (i * 60));
+    i++;
+  }
 };
 
 App.Interface.prototype.placeSensors = function(rectangles) {
   const scores = [100, 500, 1000, 0, 10000, 0, 1000, 500, 100];
   const offset = 80;
   let i = 0;
-  return (() => {
-    const result = [];
-    while (i < scores.length) {
-      rectangles.push(
-        Bodies.rectangle(
-          offset + (60 * i),
-          788,
-          55,
-          80, {
+  while (i < scores.length) {
+    rectangles.push(
+      Bodies.rectangle(
+        offset + (60 * i),
+        788,
+        55,
+        80,
+        {
           isSensor: true,
           isStatic: true,
           category: 'score',
           value: scores[i]
         }
-        )
-      );
-      result.push(i++);
-    }
-    return result;
-  })();
+      )
+    );
+    i++;
+  }
 };
 
 App.Interface.compare = function(a,b) {
@@ -257,10 +244,8 @@ App.commentEndpoint = 'https://graph.facebook.com/v2.12/me?fields=live_videos.li
 const myp = new p5(function(p) {
   // module aliases
   const { Engine, World, Bodies, Events } = Matter;
-  let {
-    engine
-  } = App;
   const { circles, rectangles, polygons } = App;
+  let { engine } = App;
   let img = undefined;
 
   p.preload = () => img = p.loadImage('bob.png');
@@ -323,7 +308,7 @@ const myp = new p5(function(p) {
     Engine.update(engine);
   };
 
-  return p.draw = function() {
+  p.draw = function() {
     p.clear();
     $.each(App.activeChips, function(_i, chip) {
       App.myInterface.drawChip(p, chip);
@@ -377,7 +362,7 @@ App.newPlayer = function(id, name, msg, time) {
   player.chips.push(chip);
   this.players.push(player);
   this.myInterface.updateScore(this.players);
-  return myp.dropChip(chip);
+  myp.dropChip(chip);
 };
 
 App.updatePlayer = function(player, msg, time) {
