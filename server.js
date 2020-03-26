@@ -1,18 +1,5 @@
 var express = require('express');
 var app = express();
-// var sassMiddleware = require('node-sass-middleware');
-// var path = require('path');
-
-// app.use(
-//   sassMiddleware({
-//     /* Options */
-//     src: path.join(__dirname, 'sass'),
-//     dest: path.join(__dirname, 'public/stylesheets'),
-//     debug: true,
-//     outputStyle: 'compressed' //,
-//      // prefix:  '/prefix'  // Where prefix is at <link rel="stylesheets" href="prefix/style.css"/>
-// })
-// );
 
 app.use(express.static('public'));
 
