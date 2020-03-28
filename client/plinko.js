@@ -203,11 +203,12 @@ App.Interface.compare = function(a,b) {
 App.Interface.prototype.updateScore = function(players) {
   $('#scoreboard').html('');
   let newHtml =
-    '<tr><td>Player</td><td>Score&nbsp;</td><td>Chips left</td></tr>';
+    '<tr><td></td><td>Player</td><td>Score&nbsp;</td><td>Chips left</td></tr>';
   $.each(
     players.sort(App.Interface.compare).reverse(),
     function(i, player) {
-      newHtml = `${newHtml}<tr><td>${parseInt(i + 1)}. ${player.name}&nbsp;` +
+      newHtml = `${newHtml}<tr><td>${parseInt(i + 1)}.</td>` +
+        `<td style="color: ${player.color}">${player.name}&nbsp;` +
         `&nbsp;</td><td>${parseInt(player.score)}&nbsp;</td><td>` +
         `${parseInt(5 - player.chips.length)}</td></tr>`;
     }
@@ -281,7 +282,7 @@ const myp = new p5(function(p) {
     p.frameRate(60);
     p.noStroke();
     engine = Engine.create({enableSleeping: true});
-    engine.world = World.create({ gravity: { x: 0, y: 1, scale: 0.0009 } });
+    engine.world = World.create({ gravity: { x: 0, y: 1, scale: 0.001 } });
 
     p.createCanvas(641, 850);
     App.myInterface.placePegs(circles);
