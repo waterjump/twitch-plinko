@@ -116,15 +116,21 @@ App.Interface.prototype.placeWalls = function(polygons, rectangles) {
   const leftWallTriangle = Matter.Vertices.fromPath('0 0 30 50 0 100');
   const rightWallTriangle = Matter.Vertices.fromPath('0 0 0 100 -30 50');
   let i = 0;
-  return (() => {
-    const result = [];
-    while (i < 6) {
-      polygons.push(Bodies.fromVertices(60, 119 + (100 * i), leftWallTriangle, {isStatic: true}));
-      polygons.push(Bodies.fromVertices(580, 119 + (100 * i), rightWallTriangle, {isStatic: true}));
-      result.push(i++);
-    }
-    return result;
-  })();
+  while (i < 6) {
+    polygons.push(
+      Bodies.fromVertices(
+        60, 119 + (100 * i), leftWallTriangle, { isStatic: true }
+      )
+    );
+
+    polygons.push(
+      Bodies.fromVertices(
+        580, 119 + (100 * i), rightWallTriangle, { isStatic: true }
+      )
+    );
+
+    i++;
+  }
 };
 
 App.Interface.prototype.placeBinWalls = function(rectangles) {
