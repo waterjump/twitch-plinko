@@ -164,21 +164,20 @@ App.Interface.prototype.placeBinScores = function(p) {
   p.fill(0);
   p.rotate(-Math.PI / 2 );
   const scores = ['100','500','1000','- 0 -','10,000','- 0 -','1000','500','100'];
-  let i = 0;
-  while (i < scores.length) {
-    p.text(scores[i], 10, 90 + (i * 60));
-    i++;
-  }
+
+  scores.forEach(function(score, index) {
+    p.text(score, 10, 90 + (index * 60));
+  });
 };
 
 App.Interface.prototype.placeSensors = function(rectangles) {
   const scores = [100, 500, 1000, 0, 10000, 0, 1000, 500, 100];
   const offset = 80;
-  let i = 0;
-  while (i < scores.length) {
+
+  scores.forEach(function(score, index) {
     rectangles.push(
       Bodies.rectangle(
-        offset + (60 * i),
+        offset + (60 * index),
         788,
         55,
         80,
@@ -186,12 +185,11 @@ App.Interface.prototype.placeSensors = function(rectangles) {
           isSensor: true,
           isStatic: true,
           category: 'score',
-          value: scores[i]
+          value: score
         }
       )
     );
-    i++;
-  }
+  });
 };
 
 App.Interface.compare = function(a,b) {
