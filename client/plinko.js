@@ -225,10 +225,9 @@ App.Interface.prototype.updateScore = function(players) {
 };
 
 App.Player = class Player {
-  constructor(id, name, lastComment, color) {
+  constructor(id, name, color) {
     this.id = id;
     this.name = name;
-    this.lastComment = lastComment;
     this.color = color;
     this.chips = [];
     this.score = 0;
@@ -248,16 +247,14 @@ App.setupPlayer = function(json) {
   const timestamp = Number(json.context['tmi-sent-ts']);
   const message = json.command.trim();
   const color = json.context.color;
+  const values = ['1','2','3','4','5','6','7','8','9'];
 
-  if (timestamp > App.gameStart) {
-    const values = ['1','2','3','4','5','6','7','8','9'];
-    if (values.includes(message)) {
-      const player = App.players.filter( p => p.id === id)[0];
-      if (player === undefined) {
-        App.newPlayer(id, name, message, timestamp, color);
-      } else {
-        App.updatePlayer(player, message, timestamp);
-      }
+  if (values.includes(message)) {
+    const player = App.players.filter( p => p.id === id)[0];
+    if (player === undefined) {
+      App.newPlayer(id, name, message, timestamp, color);
+    } else {
+      App.updatePlayer(player, message, timestamp);
     }
   }
 };
@@ -274,7 +271,6 @@ App.engine = undefined;
 App.players = [];
 App.activeChips = [];
 App.myInterface = new App.Interface();
-App.gameStart = (new Date()).getTime();
 App.hue = 0;
 
 const myp = new p5(function(p) {
@@ -333,6 +329,7 @@ const myp = new p5(function(p) {
     }
   };
 
+  // TODO: Seems like this doesn't need to be a p5 function.
   p.dropChip = function(chip) {
     chip.player.hasActiveChip = true;
     const { body } = chip;
@@ -370,7 +367,7 @@ const myp = new p5(function(p) {
 });
 
 App.newPlayer = function(id, name, msg, time, color) {
-  const player = new App.Player(id, name, time, color);
+  const player = new App.Player(id, name, color);
   const chip = new App.Chip(msg, player, time);
   this.activeChips.push(chip);
   // player.picture = this.fetchPicture(player.id);
@@ -383,8 +380,7 @@ App.newPlayer = function(id, name, msg, time, color) {
 };
 
 App.updatePlayer = function(player, msg, time) {
-  if ((time > player.lastComment) && !player.hasActiveChip && (player.chips.length < 5)) {
-    player.lastComment = time;
+  if (!player.hasActiveChip && (player.chips.length < 5)) {
     const chip = new App.Chip(msg, player, time);
     this.activeChips.push(chip);
     player.chips.push(chip);
