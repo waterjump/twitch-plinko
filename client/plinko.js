@@ -379,6 +379,7 @@ App.updatePlayer = function(player, msg, time) {
     const chip = new App.Chip(msg, player, time);
     this.activeChips.push(chip);
     player.chips.push(chip);
+    this.myInterface.updateScore(this.players);
     return myp.dropChip(chip);
   }
 };
