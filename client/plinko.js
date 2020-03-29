@@ -343,6 +343,7 @@ const myp = new p5(function(p) {
         chip.player.hasActiveChip = false;
         App.activeChips = App.activeChips.filter( aChip => aChip !== chip);
         Matter.Composite.remove(engine.world, body);
+        Engine.update(engine);
       }
     });
     Engine.update(engine);
