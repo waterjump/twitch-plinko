@@ -46,12 +46,16 @@ App.Interface.prototype.drawChip = function(p, chip) {
   const ctx = $('canvas')[0].getContext('2d');
   ctx.save();
   ctx.translate(body.position.x, body.position.y);
-  // ctx.rotate(body.angle);
+  ctx.rotate(body.angle);
   // const pat = ctx.createPattern(chip.player.element, "repeat");
   ctx.beginPath();
   ctx.arc(0, 0, rad, 0, 2 * Math.PI, false);
   // ctx.fillStyle = pat;
+  p.fill(chip.player.color || 0);
   ctx.fill();
+  p.fill(255);
+  p.textSize(30);
+  p.text(chip.player.letter, -11, 11);
   ctx.restore();
 };
 
@@ -225,6 +229,7 @@ App.Player = class Player {
     this.chips = [];
     this.score = 0;
     this.hasActiveChip = false;
+    this.letter = name.charAt(0).toUpperCase();
   }
 };
 
