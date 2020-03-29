@@ -210,17 +210,20 @@ App.Interface.compare = function(a,b) {
 
 App.Interface.prototype.updateScore = function(players) {
   $('#scoreboard').html('');
+
   let newHtml =
     '<tr><td></td><td>Player</td><td>Score&nbsp;</td><td>Chips left</td></tr>';
-  $.each(
-    players.sort(App.Interface.compare).reverse(),
-    function(i, player) {
-      newHtml = `${newHtml}<tr><td>${parseInt(i + 1)}.</td>` +
-        `<td style="color: ${player.color || '#000'}">${player.name}&nbsp;` +
-        `&nbsp;</td><td>${parseInt(player.score)}&nbsp;</td><td>` +
-        `${parseInt(5 - player.chips.length)}</td></tr>`;
+
+  sortedPlayers = players.sort(App.Interface.compare).reverse();
+
+  sortedPlayers.forEach(function(player, index) {
+    newHtml = `${newHtml}<tr><td>${parseInt(index + 1)}.</td>` +
+      `<td style="color: ${player.color || '#000'}">${player.name}&nbsp;` +
+      `&nbsp;</td><td>${parseInt(player.score)}&nbsp;</td><td>` +
+      `${parseInt(5 - player.chips.length)}</td></tr>`;
     }
   );
+
   $('#scoreboard').html(newHtml);
 };
 
@@ -347,12 +350,12 @@ const myp = new p5(function(p) {
 
   p.draw = function() {
     p.clear();
-    $.each(App.activeChips, function(_i, chip) {
+    App.activeChips.forEach(function(chip) {
       App.myInterface.drawChip(p, chip);
     });
     p.colorMode(p.HSB);
     p.fill(App.hue, 360, 100);
-    $.each(engine.world.bodies, function(_i, body) {
+    engine.world.bodies.forEach(function(body) {
       if (!body.isChip) {
         if (body.label === "Circle Body") { App.myInterface.drawEllipse(p, body); }
         if (body.label === "Rectangle Body") { App.myInterface.drawRect(p, body); }
