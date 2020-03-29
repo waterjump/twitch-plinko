@@ -41,7 +41,7 @@ App.Interface = class Interface {};
 
 App.Interface.prototype.drawChip = function(p, chip) {
   const { body } = chip;
-  p.fill(chip.player.color);
+  p.fill(chip.player.color || 0);
   const rad = body.circleRadius;
   const ctx = $('canvas')[0].getContext('2d');
   ctx.save();
@@ -208,14 +208,13 @@ App.Interface.prototype.updateScore = function(players) {
     players.sort(App.Interface.compare).reverse(),
     function(i, player) {
       newHtml = `${newHtml}<tr><td>${parseInt(i + 1)}.</td>` +
-        `<td style="color: ${player.color}">${player.name}&nbsp;` +
+        `<td style="color: ${player.color || '#000'}">${player.name}&nbsp;` +
         `&nbsp;</td><td>${parseInt(player.score)}&nbsp;</td><td>` +
         `${parseInt(5 - player.chips.length)}</td></tr>`;
     }
   );
   $('#scoreboard').html(newHtml);
 };
-
 
 App.Player = class Player {
   constructor(id, name, lastComment, color) {
