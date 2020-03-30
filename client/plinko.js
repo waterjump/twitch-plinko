@@ -243,6 +243,10 @@ App.Player = class Player {
   }
 };
 
+App.Player.prototype.setColor = function(color) {
+  this.color = color || '#00000';
+};
+
 App.Player.prototype.placePicture = function(intrfc) {
   intrfc.placePicture(this.id, this.picture);
 };
@@ -260,7 +264,7 @@ App.setupPlayer = function(json) {
     if (player === undefined) {
       App.newPlayer(id, name, message, timestamp, color);
     } else {
-      App.updatePlayer(player, message, timestamp);
+      App.updatePlayer(player, message, timestamp, color);
     }
   }
 };
@@ -349,7 +353,7 @@ const myp = new p5(function(p) {
       if (player === undefined) {
         App.newPlayer('me', 'dummy', p.keyCode - 48, timestamp, '#000');
       } else {
-        App.updatePlayer(player, p.keyCode - 48, timestamp);
+        App.updatePlayer(player, p.keyCode - 48, timestamp, '#000');
       }
     } else if (p.keyCode === 78) {
       // lower case n
@@ -418,7 +422,9 @@ App.newPlayer = function(id, name, msg, time, color) {
   myp.dropChip(chip);
 };
 
-App.updatePlayer = function(player, msg, time) {
+App.updatePlayer = function(player, msg, time, color) {
+  player.setColor(color);
+  this.myInterface.updateScore(this.players);
   if (!player.hasActiveChip && (player.chips.length < 5)) {
     const chip = new App.Chip(msg, player, time);
     this.activeChips.push(chip);
