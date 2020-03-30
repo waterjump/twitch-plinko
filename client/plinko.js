@@ -378,13 +378,9 @@ const myp = new p5(function(p) {
     App.engine.world.bodies.forEach(function(body) {
       if (!body.isChip) {
         if (body.label === "Circle Body") {
-          if (body.isPeg) {
-            p.fill(0);
-            App.myInterface.drawEllipse(p, body)
-            p.fill(App.hue, 360, 100);
-          } else {
-            App.myInterface.drawEllipse(p, body);
-          }
+          p.fill(0);
+          App.myInterface.drawEllipse(p, body);
+          p.fill(App.hue, 360, 100);
         }
         if (body.label === "Rectangle Body") { App.myInterface.drawRect(p, body); }
         if (body.label === "Body") { App.myInterface.drawPoly(p, body); }
