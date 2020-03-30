@@ -12,11 +12,6 @@ body {
   background: url('bob.png');
 }
 
-.off-screen {
-  position: absolute;
-  left: -9999px;
-}
-
 #scoreboard {
   font-size: 30px;
   font-family: sans-serif;

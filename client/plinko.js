@@ -47,10 +47,8 @@ App.Interface.prototype.drawChip = function(p, chip) {
   ctx.save();
   ctx.translate(body.position.x, body.position.y);
   ctx.rotate(body.angle);
-  // const pat = ctx.createPattern(chip.player.element, "repeat");
   ctx.beginPath();
   ctx.arc(0, 0, rad, 0, 2 * Math.PI, false);
-  // ctx.fillStyle = pat;
   p.fill(chip.player.color || 0);
   ctx.fill();
   p.fill(255);
@@ -104,11 +102,6 @@ App.Interface.prototype.placePegs = function(circles) {
     i++;
   }
 };
-
-// Displays image off-screen so it's loaded
-App.Interface.prototype.placePicture = (id, picture) => $('body').append(
-  '<img id="' + id + '" class="off-screen" src="' + picture + '" />'
-);
 
 App.Interface.prototype.placeWalls = function(polygons, rectangles) {
   rectangles.push(Bodies.rectangle(25,420,50,830, {isStatic: true}));
@@ -247,10 +240,6 @@ App.Player.prototype.setColor = function(color) {
   this.color = color || '#00000';
 };
 
-App.Player.prototype.placePicture = function(intrfc) {
-  intrfc.placePicture(this.id, this.picture);
-};
-
 App.setupPlayer = function(json) {
   const name = json.context.username
   const id = json.context.username
@@ -302,9 +291,6 @@ App.newGame = function() {
 const myp = new p5(function(p) {
   const { Engine, World, Bodies, Events } = Matter;
   const { circles, rectangles, polygons } = App;
-  let img = undefined;
-
-  p.preload = () => img = p.loadImage('bob.png');
 
   p.setup = function() {
     p.frameRate(60);
@@ -413,9 +399,6 @@ App.newPlayer = function(id, name, msg, time, color) {
   const player = new App.Player(id, name, color);
   const chip = new App.Chip(msg, player, time);
   this.activeChips.push(chip);
-  // player.picture = this.fetchPicture(player.id);
-  player.placePicture(this.myInterface);
-  player.element = $('#' + player.id)[0];
   player.chips.push(chip);
   this.players.push(player);
   this.myInterface.updateScore(this.players);
