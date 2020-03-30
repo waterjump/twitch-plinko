@@ -1,5 +1,25 @@
 body {
   margin: 0px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+h1 {
+  margin: 0;
+  padding: 0;
+  font-size: 120px;
+  position: absolute;
+  left: 740px;
+  top: 0px;
+}
+
+h2 {
+  margin: 0;
+  padding: 0;
+  font-size: 40px;
+  line-height: 0.8;
+  position: absolute;
+  left: 750px;
+  top: 115px;
 }
 
 #bob {
@@ -16,7 +36,7 @@ body {
   font-size: 30px;
   font-family: sans-serif;
   position: absolute;
-  top: 185px;
+  top: 190px;
   left: 669px;
   width: 600px;
 }
