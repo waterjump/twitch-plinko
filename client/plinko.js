@@ -202,27 +202,31 @@ App.Interface.compare = function(a,b) {
 };
 
 App.Interface.prototype.updateScore = function(players) {
-  $('#scoreboard').html('');
-
-  let newHtml =
-    '<tr><td></td><td>Player</td><td>Score&nbsp;</td><td>Chips left</td></tr>';
+  let newHtml = App.Interface.scoreboardHeading;
 
   sortedPlayers = players.sort(App.Interface.compare).reverse();
 
   let index = 0;
   sortedPlayers.forEach(function(player) {
     if (player.chips.length > 0) {
-      newHtml = `${newHtml}<tr><td>${parseInt(index + 1)}.</td>` +
-        `<td style="color: ${player.color || '#000'}">${player.name}&nbsp;` +
-        `&nbsp;</td><td>${parseInt(player.score)}&nbsp;</td><td>` +
+      newHtml += `<tr><td>${parseInt(index + 1)}.</td>` +
+        `<td class="player-name" style="color: ${player.color || '#000'};">` +
+        `${player.name}</td><td>${parseInt(player.score)}&nbsp;</td><td>` +
         `${parseInt(5 - player.chips.length)}</td></tr>`;
       index++;
       }
     }
   );
 
+  newHtml += '</table>';
   $('#scoreboard').html(newHtml);
 };
+
+App.Interface.scoreboardHeading =
+  "<table><tr class='table-heading'><td class='rank-heading'></td>" +
+  "<td class='player-heading'>Player</td>" +
+  "<td class='score-heading'>Score</td>" +
+  "<td class='chips-left-heading'>Chips left</td></tr>";
 
 App.Player = class Player {
   constructor(id, name, color) {
@@ -285,7 +289,7 @@ App.newGame = function() {
   App.activeChips = [];
 
   //clear scoreboard
-  $('#scoreboard').html('');
+  $('#scoreboard').html(App.Interface.scoreboardHeading);
 }
 
 const myp = new p5(function(p) {
