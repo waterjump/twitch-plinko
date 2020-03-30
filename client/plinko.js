@@ -322,16 +322,18 @@ const myp = new p5(function(p) {
     World.add(App.engine.world, polygons);
 
     Events.on(App.engine, "collisionStart", function(event) {
-      const bodies = [event.pairs[0].bodyA, event.pairs[0].bodyB];
-      const sensor = bodies.filter( b => b.isSensor)[0];
-      if (sensor !== undefined) {
-        console.log('score ' + sensor.value);
-        const body = bodies.filter( b => b.isChip)[0];
-        body.restitution = 0;
-        const { player } = body.chip;
-        player.score = player.score + sensor.value;
-        App.myInterface.updateScore(App.players);
-      }
+      event.pairs.forEach(function(pair) {
+        const bodies = [pair.bodyA, pair.bodyB];
+        const sensor = bodies.filter( b => b.isSensor)[0];
+        if (sensor !== undefined) {
+          console.log('score ' + sensor.value);
+          const body = bodies.filter( b => b.isChip)[0];
+          body.restitution = 0;
+          const { player } = body.chip;
+          player.score = player.score + sensor.value;
+          App.myInterface.updateScore(App.players);
+        }
+      });
     });
     Engine.run(App.engine);
 
