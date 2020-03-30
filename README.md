@@ -37,7 +37,7 @@ NOTE: You can get a Twitch OAuth token [here](https://twitchapps.com/tmi/).
 3. Drop a chip.  There are two ways to drop a chip:
   * Make a comment of a slot number on the Twitch chat you are connected to: `1`, `2`, `3`, etc. up through `9`.
   * On the page running the game, pressing keys 1 through 9 will drop a chip in the respective slot as a dummy user.
-4. Reloading the page will wipe all previous game data and start a new round.
+4. In the page running the game, pressing the `n` key will reset the game, starting a new round.
 
 ### Special thanks
 * [Dan Shiffman](https://github.com/shiffman) for his great Express/p5/websockets tutorials.

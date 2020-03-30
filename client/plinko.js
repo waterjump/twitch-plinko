@@ -216,11 +216,15 @@ App.Interface.prototype.updateScore = function(players) {
 
   sortedPlayers = players.sort(App.Interface.compare).reverse();
 
-  sortedPlayers.forEach(function(player, index) {
-    newHtml = `${newHtml}<tr><td>${parseInt(index + 1)}.</td>` +
-      `<td style="color: ${player.color || '#000'}">${player.name}&nbsp;` +
-      `&nbsp;</td><td>${parseInt(player.score)}&nbsp;</td><td>` +
-      `${parseInt(5 - player.chips.length)}</td></tr>`;
+  let index = 0;
+  sortedPlayers.forEach(function(player) {
+    if (player.chips.length > 0) {
+      newHtml = `${newHtml}<tr><td>${parseInt(index + 1)}.</td>` +
+        `<td style="color: ${player.color || '#000'}">${player.name}&nbsp;` +
+        `&nbsp;</td><td>${parseInt(player.score)}&nbsp;</td><td>` +
+        `${parseInt(5 - player.chips.length)}</td></tr>`;
+      index++;
+      }
     }
   );
 
@@ -244,7 +248,6 @@ App.Player.prototype.placePicture = function(intrfc) {
 };
 
 App.setupPlayer = function(json) {
-  console.log(json.context);
   const name = json.context.username
   const id = json.context.username
   const timestamp = Number(json.context['tmi-sent-ts']);
@@ -262,11 +265,8 @@ App.setupPlayer = function(json) {
   }
 };
 
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
+// --- formerly app.js ---
+
 App.circles = [];
 App.rectangles = [];
 App.polygons = [];
@@ -276,11 +276,28 @@ App.activeChips = [];
 App.myInterface = new App.Interface();
 App.hue = 0;
 
+App.newGame = function() {
+  // Remove all player chips from memory and reset player score
+  App.players.forEach(function(player) {
+    player.hasActiveChip = false;
+    player.chips = [];
+    player.score = 0;
+  });
+
+  // Remove all activeChips from physics engine and reset activeChips
+  App.activeChips.forEach(function(chip) {
+    Matter.Composite.remove(App.engine.world, chip.body);
+    Matter.Engine.update(App.engine);
+  });
+  App.activeChips = [];
+
+  //clear scoreboard
+  $('#scoreboard').html('');
+}
+
 const myp = new p5(function(p) {
-  // module aliases
   const { Engine, World, Bodies, Events } = Matter;
   const { circles, rectangles, polygons } = App;
-  let { engine } = App;
   let img = undefined;
 
   p.preload = () => img = p.loadImage('bob.png');
@@ -288,21 +305,23 @@ const myp = new p5(function(p) {
   p.setup = function() {
     p.frameRate(60);
     p.noStroke();
-    engine = Engine.create({enableSleeping: true});
-    engine.world = World.create({ gravity: { x: 0, y: 1, scale: 0.001 } });
+    App.engine = Engine.create({ enableSleeping: true });
+    App.engine.world = World.create({ gravity: { x: 0, y: 1, scale: 0.001 } });
 
     p.createCanvas(641, 850);
     App.myInterface.placePegs(circles);
     App.myInterface.placeWalls(polygons, rectangles);
     App.myInterface.placeBinWalls(rectangles);
     App.myInterface.placeSensors(rectangles);
-    rectangles.push(Bodies.rectangle(320, 830, 641, 10, {isStatic: true})); // floor
 
-    World.add(engine.world, circles);
-    World.add(engine.world, rectangles);
-    World.add(engine.world, polygons);
+    // place floor
+    rectangles.push(Bodies.rectangle(320, 830, 641, 10, { isStatic: true }));
 
-    Events.on(engine, "collisionStart", function(event) {
+    World.add(App.engine.world, circles);
+    World.add(App.engine.world, rectangles);
+    World.add(App.engine.world, polygons);
+
+    Events.on(App.engine, "collisionStart", function(event) {
       const bodies = [event.pairs[0].bodyA, event.pairs[0].bodyB];
       const sensor = bodies.filter( b => b.isSensor)[0];
       if (sensor !== undefined) {
@@ -314,7 +333,7 @@ const myp = new p5(function(p) {
         App.myInterface.updateScore(App.players);
       }
     });
-    Engine.run(engine);
+    Engine.run(App.engine);
 
     socket = io.connect('http://localhost:8081')
     socket.on('play', App.setupPlayer);
@@ -322,6 +341,7 @@ const myp = new p5(function(p) {
 
   p.keyPressed = function() {
     if ((p.keyCode > 48) && (p.keyCode < 58)) {
+      // 1 through 9
       const player = App.players.filter(p => p.id === 'me')[0];
       const timestamp = (new Date()).getTime();
       if (player === undefined) {
@@ -329,6 +349,9 @@ const myp = new p5(function(p) {
       } else {
         App.updatePlayer(player, p.keyCode - 48, timestamp);
       }
+    } else if (p.keyCode === 78) {
+      // lower case n
+      App.newGame();
     }
   };
 
@@ -336,27 +359,29 @@ const myp = new p5(function(p) {
   p.dropChip = function(chip) {
     chip.player.hasActiveChip = true;
     const { body } = chip;
-    circles.push(body);
-    World.add(engine.world, body);
+    World.add(App.engine.world, body);
+    Engine.update(App.engine);
+
     Events.on(body, 'sleepStart', function(event) {
       if (body.position.y > 750) {
         chip.player.hasActiveChip = false;
         App.activeChips = App.activeChips.filter( aChip => aChip !== chip);
-        Matter.Composite.remove(engine.world, body);
-        Engine.update(engine);
+        Matter.Composite.remove(App.engine.world, body);
+        Engine.update(App.engine);
       }
     });
-    Engine.update(engine);
   };
 
   p.draw = function() {
     p.clear();
+
     App.activeChips.forEach(function(chip) {
       App.myInterface.drawChip(p, chip);
     });
+
     p.colorMode(p.HSB);
     p.fill(App.hue, 360, 100);
-    engine.world.bodies.forEach(function(body) {
+    App.engine.world.bodies.forEach(function(body) {
       if (!body.isChip) {
         if (body.label === "Circle Body") {
           if (body.isPeg) {
@@ -397,6 +422,6 @@ App.updatePlayer = function(player, msg, time) {
     this.activeChips.push(chip);
     player.chips.push(chip);
     this.myInterface.updateScore(this.players);
-    return myp.dropChip(chip);
+    myp.dropChip(chip);
   }
 };
