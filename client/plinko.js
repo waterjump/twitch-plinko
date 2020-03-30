@@ -31,7 +31,6 @@ App.Chip = class Chip {
 
 /*
  * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
  * DS205: Consider reworking code to avoid use of IIFEs
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
@@ -41,7 +40,6 @@ App.Interface = class Interface {};
 
 App.Interface.prototype.drawChip = function(p, chip) {
   const { body } = chip;
-  p.fill(chip.player.color || 0);
   const rad = body.circleRadius;
   const ctx = $('canvas')[0].getContext('2d');
   ctx.save();
