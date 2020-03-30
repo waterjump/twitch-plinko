@@ -97,7 +97,7 @@ App.Interface.prototype.placePegs = function(circles) {
     let j = 0;
     x = offset;
     while (j < cols) {
-      circles.push(Bodies.circle(x, y, 2.5, { isStatic: true }));
+      circles.push(Bodies.circle(x, y, 2.5, { isStatic: true, isPeg: true }));
       x = x + 60;
       j++;
     }
@@ -358,7 +358,15 @@ const myp = new p5(function(p) {
     p.fill(App.hue, 360, 100);
     engine.world.bodies.forEach(function(body) {
       if (!body.isChip) {
-        if (body.label === "Circle Body") { App.myInterface.drawEllipse(p, body); }
+        if (body.label === "Circle Body") {
+          if (body.isPeg) {
+            p.fill(0);
+            App.myInterface.drawEllipse(p, body)
+            p.fill(App.hue, 360, 100);
+          } else {
+            App.myInterface.drawEllipse(p, body);
+          }
+        }
         if (body.label === "Rectangle Body") { App.myInterface.drawRect(p, body); }
         if (body.label === "Body") { App.myInterface.drawPoly(p, body); }
       }
