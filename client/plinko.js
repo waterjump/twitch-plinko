@@ -271,6 +271,7 @@ App.rectangles = [];
 App.polygons = [];
 App.engine = undefined;
 App.players = [];
+App.runPlinkoBot = true;
 App.activeChips = [];
 App.myInterface = new App.Interface();
 App.hue = 0;
@@ -292,6 +293,10 @@ App.newGame = function() {
 
   //clear scoreboard
   $('#scoreboard').html(App.Interface.scoreboardHeading);
+
+  console.log('new game');
+
+  if (App.runPlinkoBot) { App.playPlinkoBot(); }
 }
 
 const myp = new p5(function(p) {
@@ -333,6 +338,8 @@ const myp = new p5(function(p) {
     });
     Engine.run(App.engine);
 
+    if (App.runPlinkoBot) { App.playPlinkoBot(); }
+
     socket = io.connect('http://localhost:8081')
     socket.on('play', App.setupPlayer);
   };
@@ -340,13 +347,7 @@ const myp = new p5(function(p) {
   p.keyPressed = function() {
     if ((p.keyCode > 48) && (p.keyCode < 58)) {
       // 1 through 9
-      const player = App.players.filter(p => p.id === 'me')[0];
-      const timestamp = (new Date()).getTime();
-      if (player === undefined) {
-        App.newPlayer('me', 'dummy', p.keyCode - 48, timestamp, '#000');
-      } else {
-        App.updatePlayer(player, p.keyCode - 48, timestamp, '#000');
-      }
+      App.dropPlinkoBotChip(p.keyCode - 48);
     } else if (p.keyCode === 78) {
       // lower case n
       App.newGame();
@@ -366,6 +367,19 @@ const myp = new p5(function(p) {
         App.activeChips = App.activeChips.filter( aChip => aChip !== chip);
         Matter.Composite.remove(App.engine.world, body);
         Engine.update(App.engine);
+
+        // Automated plinko bot plays
+        if (App.runPlinkoBot && chip.player.name === 'PlinkoBot') {
+          if (chip.player.chips.length === 5) {
+            // reset game
+            console.log('restarting game in 10 seconds');
+            setTimeout(
+              function() { App.newGame() }, 10000
+            );
+          } else {
+            App.playPlinkoBot();
+          }
+        }
       }
     });
   };
@@ -417,4 +431,26 @@ App.updatePlayer = function(player, msg, time, color) {
     this.myInterface.updateScore(this.players);
     myp.dropChip(chip);
   }
+};
+
+App.playPlinkoBot = function() {
+  const slots = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  let randomSlot = slots[Math.floor(Math.random() * slots.length)];
+
+  console.log('plinko bot dropping new chip in 10 seconds...');
+
+  setTimeout(function() { App.dropPlinkoBotChip(randomSlot) }, 10000);
+};
+
+App.dropPlinkoBotChip = function(slot) {
+  App.setupPlayer(
+    {
+      command: `${slot}`,
+      context: {
+        username: 'PlinkoBot',
+        'tmi-sent-ts': (new Date()).getTime(),
+        color: '#000'
+      }
+    }
+  )
 };
