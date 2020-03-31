@@ -231,8 +231,7 @@ App.Interface.scoreboardHeading =
   "<td class='chips-left-heading'>Chips left</td></tr>";
 
 App.Player = class Player {
-  constructor(id, name, color) {
-    this.id = id;
+  constructor(name, color) {
     this.name = name;
     this.color = color || '#000000';
     this.chips = [];
@@ -248,16 +247,15 @@ App.Player.prototype.setColor = function(color) {
 
 App.setupPlayer = function(json) {
   const name = json.context.username
-  const id = json.context.username
   const timestamp = Number(json.context['tmi-sent-ts']);
   const message = json.command.trim();
   const color = json.context.color;
   const values = ['1','2','3','4','5','6','7','8','9'];
 
   if (values.includes(message)) {
-    const player = App.players.filter( p => p.id === id)[0];
+    const player = App.players.filter( p => p.name === name)[0];
     if (player === undefined) {
-      App.newPlayer(id, name, message, timestamp, color);
+      App.newPlayer(name, message, timestamp, color);
     } else {
       App.updatePlayer(player, message, timestamp, color);
     }
@@ -411,8 +409,8 @@ const myp = new p5(function(p) {
   };
 });
 
-App.newPlayer = function(id, name, msg, time, color) {
-  const player = new App.Player(id, name, color);
+App.newPlayer = function(name, msg, time, color) {
+  const player = new App.Player(name, color);
   const chip = new App.Chip(msg, player, time);
   this.activeChips.push(chip);
   player.chips.push(chip);
