@@ -205,13 +205,17 @@ App.Interface.prototype.updateScore = function(players) {
   sortedPlayers = players.sort(App.Interface.compare).reverse();
 
   let index = 0;
+  let lastScore = undefined;
+
   sortedPlayers.forEach(function(player) {
     if (player.chips.length > 0) {
+      lastScore = lastScore || player.score;
+      if (player.score !== lastScore) { index++; };
       newHtml += `<tr><td>${parseInt(index + 1)}.</td>` +
         `<td class="player-name" style="color: ${player.color || '#000'};">` +
         `${player.name}</td><td>${parseInt(player.score)}&nbsp;</td><td>` +
         `${parseInt(5 - player.chips.length)}</td></tr>`;
-      index++;
+      lastScore = player.score;
       }
     }
   );
