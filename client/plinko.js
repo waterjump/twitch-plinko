@@ -234,7 +234,7 @@ App.Player = class Player {
   constructor(id, name, color) {
     this.id = id;
     this.name = name;
-    this.color = color;
+    this.color = color || '#000000';
     this.chips = [];
     this.score = 0;
     this.hasActiveChip = false;
@@ -243,7 +243,7 @@ App.Player = class Player {
 };
 
 App.Player.prototype.setColor = function(color) {
-  this.color = color || '#00000';
+  this.color = color || '#000000';
 };
 
 App.setupPlayer = function(json) {
