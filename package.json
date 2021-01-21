@@ -24,7 +24,7 @@
     "node-sass": "^4.13.1",
     "p5": "^1.0.0",
     "poly-decomp": "^0.3.0",
-    "socket.io": "^2.3.0",
+    "socket.io": "^2.4.0",
     "tmi.js": "^1.5.0"
   },
   "devDependencies": {
